@@ -19,7 +19,7 @@ If I hadn't done a simulation of past-data, live trading could take days to indi
 In this example, the model used is within "prophet_predictions(self, data):" and it is used to predict the price of the next candlestick's price, the "calculate_accuracy" is used to check whether the prediction was correct in terms of signals (e.g going up or down).
 When the code has finished executing, you should be able to see all the datasets there.
 Have a look at 
-![Basic example](./example.ipynb) (for an example).
+[Basic example](./example.ipynb) (for an example).
 ```bash
 import yfinance as yf
 import pandas as pd
