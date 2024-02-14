@@ -1,4 +1,4 @@
-# algotrading_simulation
+# price_prediction_simulation
 This is a quick python tutorial on how to create a stock price price simulation.
 
 **Disclaimer: This tutorial is for educational purposes only and should not be interpreted as trading advice. The provided code, timestamps, and datasets are used for visualization and experimentation purposes and may not represent a realistic trading model.**
