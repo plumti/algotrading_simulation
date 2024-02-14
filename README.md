@@ -18,6 +18,8 @@ The reason why simulation of past-data (non-live) trading is very useful for dat
 If I hadn't done a simulation of past-data, live trading could take days to indicate whether my model is accurate (in terms of predicting whether the price will go up or down).
 In this example, the model used is within "prophet_predictions(self, data):" and it is used to predict the price of the next candlestick's price, the "calculate_accuracy" is used to check whether the prediction was correct in terms of signals (e.g going up or down).
 When the code has finished executing, you should be able to see all the datasets there.
+Have a look at 
+![Alt Text](./example.ipynb) (for an example).
 ```bash
 import yfinance as yf
 import pandas as pd
