@@ -1,9 +1,9 @@
 # algotrading_simulation
-This is a quick python tutorial on how to create an algorithmic trading bot simulation.
+This is a quick python tutorial on how to create a stock price price simulation.
 
 **Disclaimer: This tutorial is for educational purposes only and should not be interpreted as trading advice. The provided code, timestamps, and datasets are used for visualization and experimentation purposes and may not represent a realistic trading model.**
 
-By following the steps below, you'll be able to understand the purpose of the code and get started with your algo trading analysis project.
+By following the steps below, you'll be able to understand the purpose of the code and get started with your stock price analysis project.
 
 ## Installation
 Assuming you have python (installed)
