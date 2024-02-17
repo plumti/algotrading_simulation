@@ -117,6 +117,7 @@ predictor.save_minute_data_with_predictions()
 Stock = pd.read_csv('newminute_data_aapl_with_prediction_oop.csv',  index_col=0)
 df_Stock = Stock
 df_Stock.head(10)
+
 '''
 
 ## Not accurate enough?
