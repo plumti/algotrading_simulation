@@ -26,16 +26,21 @@ import pandas as pd
 from prophet import Prophet
 import numpy as np
 
+# Use the context manager to redirect stdout and stderr to the null device
 class MinuteDataPredictor:
+
     def __init__(self, symbol, file_path):
         self.symbol = symbol
         self.file_path = file_path
         self.minute_data = None
+        self.correct_predictions=0
+        self.wrong_predictions=0
+
     
     def fetch_minute_data(self):
         try:
             # Fetch historical data for the last x amount of days with x amount of minute intervals
-            data = yf.download(self.symbol, period='7d', interval='1m')
+            data = yf.download(self.symbol, period='2d', interval='60m')
 
             # Select only the 'Close' prices and reset the index to include 'Timestamp'
             self.minute_data = data[['Close']].reset_index()
@@ -54,38 +59,20 @@ class MinuteDataPredictor:
             print(f"Error fetching minute data: {e}")
 
     def prophet_predictions(self, data):
-        data = data[['Timestamp', 'Price']].copy()
-        data.rename(columns={'Timestamp': 'ds', 'Price': 'y'}, inplace=True)
-        model = Prophet()
-        model.fit(data)
-        future = model.make_future_dataframe(periods=1, freq='min')
-        forecast = model.predict(future)
-        next_minute_prediction = forecast['yhat'].iloc[-1]
-        print(next_minute_prediction)
-        return next_minute_prediction
-    
-    def calculate_accuracy(self, next_minute_prediction_prophet, i):
-            correct_predictions = 0
-            for j in range(1, i):
-                
-                actual_price = self.minute_data.loc[j, 'Price']
-                actual_change = self.minute_data.loc[j + 1, 'Price'] - actual_price
-                predicted_change = next_minute_prediction_prophet - actual_price
-               # print("the actual price is : ", actual_price, "actual change = ",actual_change)
-               # print("the prediction price (forecasting +1min) is : ", next_minute_prediction_prophet, "predicted change = ",predicted_change)
-                
-                if (predicted_change > 0 and actual_change > 0 ):
-                    correct_predictions += 1
 
-                if (predicted_change < 0 and actual_change < 0 ):
-                    correct_predictions += 1
+            data = data[['Timestamp', 'Price']].copy()
+            data.rename(columns={'Timestamp': 'ds', 'Price': 'y'}, inplace=True)
+            model = Prophet()
+            model.fit(data)
+            future = model.make_future_dataframe(periods=1, freq='min')
+            forecast = model.predict(future)
+            next_minute_prediction = forecast['yhat'].iloc[-1]
+            #print(next_minute_prediction)
+            return next_minute_prediction
 
-            if correct_predictions == 0 :
-                return 0
-            else:
-                accuracy = (correct_predictions / i) * 100
-                return accuracy
+# Set the logging level to suppress informational messages
 
+        
     def save_minute_data_with_predictions(self):
         try:
             self.fetch_minute_data()
@@ -96,24 +83,42 @@ class MinuteDataPredictor:
                 # Make predictions using Prophet model
                 next_minute_prediction_prophet = self.prophet_predictions(previous_data)
                 self.minute_data.at[i, 'Prediction_Prophet'] = next_minute_prediction_prophet
+                
+                
+                actual_price = self.minute_data.loc[i, 'Price']
+                actual_change = self.minute_data.loc[i + 1, 'Price'] - actual_price
+                predicted_change = next_minute_prediction_prophet - actual_price
+                
+                if (predicted_change > 0 and actual_change > 0 ):
+                    self.correct_predictions += 1
 
-                # Calculate accuracy for Prophet model
-                accuracy_percentage_prophet = self.calculate_accuracy(next_minute_prediction_prophet, i)
-                self.minute_data.at[i, 'Accuracy_Prophet'] = accuracy_percentage_prophet
-                if len(previous_data) > 2:
-                    print(f"{self.minute_data.at[i, 'Timestamp']}: "
-                        f"Prediction (Prophet) - {next_minute_prediction_prophet}, "
-                        f"Accuracy (Prophet) - {accuracy_percentage_prophet}%, "
-                       )
-            # Save data to a CSV file
+                elif (predicted_change < 0 and actual_change < 0 ):
+                    self.correct_predictions += 1
+                    
+                else:
+                    self.wrong_predictions+=1
+                total = self.correct_predictions+self.wrong_predictions
+                if total !=0:
+                    
+                    accuracy = (self.correct_predictions / total) * 100
+                else:
+                    accuracy = 0
+
+                self.minute_data.at[i, 'Accuracy_Prophet'] = accuracy
+                                   
             self.minute_data.to_csv(self.file_path, index=False)
-            print(f"Minute data with predictions and accuracy based on both models saved to {self.file_path}")
+           # print(f"Minute data with predictions and accuracy based on model saved to {self.file_path}")
 
         except Exception as e:
             print(f"Error: {e}")
-predictor = MinuteDataPredictor(symbol='AAPL', file_path='minute_data_aapl_with_prediction_oop.csv')
+predictor = MinuteDataPredictor(symbol='AAPL', file_path='newminute_data_aapl_with_prediction_oop.csv')
 
 predictor.save_minute_data_with_predictions()
+Stock = pd.read_csv('newminute_data_aapl_with_prediction_oop.csv',  index_col=0)
+df_Stock = Stock
+df_Stock.head(10)
+```bash
+
 ## Not accurate enough?
 If you think these predictions aren't precise enough, try adjust the timestamp and dataset settings, add new models for your price predictions. 
 # Sources:
