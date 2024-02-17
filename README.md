@@ -117,7 +117,7 @@ predictor.save_minute_data_with_predictions()
 Stock = pd.read_csv('newminute_data_aapl_with_prediction_oop.csv',  index_col=0)
 df_Stock = Stock
 df_Stock.head(10)
-bash
+'''
 
 ## Not accurate enough?
 If you think these predictions aren't precise enough, try adjust the timestamp and dataset settings, add new models for your price predictions. 
